@@ -35,8 +35,8 @@ exports.createUser = function(mac, passcode, key, ticket, callback) {
     });
 };
 
-exports.getUser = function(key, ticket, callback) {
-    User.find({key: key, ticket: ticket}).exec(function(err, data) {
+exports.getUser = function(key, callback) {
+    User.find({key: key}).exec(function(err, data) {
         if (err) { return callback(err, null); }
         else if (data.length === 0) {
             var error = new Error('Resource(s) with the specified id was not found');

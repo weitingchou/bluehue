@@ -62,7 +62,7 @@ exports.bluemix = function(router) {
         try {
             var mac = req.body.mac || undefined,
                 passcode = req.body.passcode || undefined;
-            if (validateMacAndPasscode(mac, passcode)) {
+            if (validateMacAndPasscodeFormat(mac, passcode)) {
                 db.getTicket(function(err, ticket) {
                     log.debug('Ticket get: '+ticket);
                     if (err) {
@@ -87,7 +87,7 @@ exports.bluemix = function(router) {
                                 }
                             }
                             hue.turnOn(ticket);
-                            res.send({message: 'Success', ticket: ticket, key: key});
+                            res.send({message: 'Success', lightbulb: ticket, key: key});
                         });
                     }
                 });
@@ -104,24 +104,23 @@ exports.bluemix = function(router) {
     var hueHandler = function(req, res) {
         try {
             var key = req.body.key || undefined,
-                ticket = req.body.ticket || undefined,
                 color = req.body.color || undefined;
 
-            if (key && ticket && validateColor(color)) {
-                db.getUser(key, ticket, function(err) {
+            if (validateKeyFormat(key) && validateColorFormat(color)) {
+                db.getUser(key, function(err, user) {
                     if (err) {
                         if (err.name === 'IDError') {
-                            log.error('Can\'t find the registry entry for the key (%s) and ticket (%d) pair', key, ticket);
+                            log.error('Can\'t find the registry entry for the key: '+key);
                             return res.status(400).send({error: err.message});
                         }
                         log.error(err);
                         return res.status(500).send({error: 'Internal Error'});
                     }
-                    hue.setColor(ticket, color.R, color.G, color.B);
+                    hue.setColor(user.ticket, color.R, color.G, color.B);
                     res.send({message: 'Success'});
                 });
             } else {
-                log.error('Invalid request format, key: '+key+', ticket: '+ticket+', color: '+JSON.stringify(color));
+                log.error('Invalid request format, key: '+key+', color: '+JSON.stringify(color));
                 res.status(400).send({error: 'Bad request'});
             }
         } catch (err) {
@@ -130,7 +129,7 @@ exports.bluemix = function(router) {
         }
     };
 
-    function validateMacAndPasscode(mac, passcode) {
+    function validateMacAndPasscodeFormat(mac, passcode) {
         try {
             if (mac && passcode) {
                 var macValidator = /^([0-9A-F]{2}){6}$/i;
@@ -151,21 +150,40 @@ exports.bluemix = function(router) {
         }
     }
 
-    function validateColor(color) {
+    function validateColorFormat(color) {
         var R = color.R || undefined,
             G = color.G || undefined,
             B = color.B || undefined;
 
         try {
-            if ((0 <= R <= 255) &&
-                (0 <= G <= 255) &&
-                (0 <= B <= 255)) {
+            R = parseInt(R, 10);
+            G = parseInt(G, 10);
+            B = parseInt(B, 10);
+            if ((0 <= R && R <= 255) &&
+                (0 <= G && G <= 255) &&
+                (0 <= B && B <= 255)) {
                 return true;
             } else {
                 return false;
             }
         } catch (err) {
             log.error('Unexpected error detected when validating color setting, err: '+err);
+            return false;
+        }
+    }
+
+    function validateKeyFormat(key) {
+        try {
+            if (key) {
+                var validator = /^([0-9A-F]{8}[-])([0-9A-F]{4}[-]){3}([0-9A-F]{12})$/i;
+                if (validator.test(key)) {
+                    return true;
+                } else {
+                    return false;
+                }
+            }
+        } catch (err) {
+            log.error('Unexpected error detected when validating key, err: '+err);
             return false;
         }
     }
