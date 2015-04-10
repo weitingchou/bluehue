@@ -125,7 +125,7 @@ exports.getTicket = function(callback) {
     Counter.findOneAndUpdate({name: 'lightbulb', count: {$lt: config.totalTickets}}, {$inc: {count: 1}}, function(err, counter) {
         if (err) { return callback(err, null); }
         if (counter) {
-            Ticket.findOneAndUpdate({issued: false}, {$set: {issude: true}}, function(err, ticket) {
+            Ticket.findOneAndUpdate({issued: false}, {$set: {issued: true}}, function(err, ticket) {
                 if (err) {
                     log.error('Failed to find free ticket!');
                 } else {
@@ -146,7 +146,7 @@ exports.releaseTicket = function(ticketNumber, callback) {
     Counter.findOneAndUpdate({name: 'lightbulb', count: {$gte: 0}}, {$inc: {count: -1}}, {}, function(err, counter) {
         if (err) { return callback(err, null); }
         if (counter) {
-            Ticket.findOneAndUpdate({number: ticketNumber}, {$set: {issude: false}}, function(err) {
+            Ticket.findOneAndUpdate({number: ticketNumber}, {$set: {issued: false}}, function(err) {
                 if (err) {
                     log.error('Failed to release ticket: '+ticketNumber);
                 } else {

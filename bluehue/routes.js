@@ -47,7 +47,7 @@ function removeExpiredUsers() {
         log.error('Unexpected error, err: '+err);
     }
 }
-setInterval(removeExpiredUsers, ticketTTL);
+setInterval(removeExpiredUsers, 30000);
 
 function allow_methods(methods) {
     return function(req, res) {
