@@ -77,7 +77,7 @@ exports.bluemix = function(router) {
                         db.createUser(mac, passcode, key, ticket, function(err) {
                             if (err) {
                                 log.error('Failed to create user, err: '+err);
-                                db.releaseTicket(function(err) {
+                                db.releaseTicket(ticket, function(err) {
                                     if (err) { log.error('Failed to release ticket, err: '+err); }
                                 });
                                 if (err.name === 'DupKeyError') {
