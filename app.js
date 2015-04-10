@@ -3,14 +3,14 @@ var express = require('express'),
     log = require('logule').init(module, 'Bluemix app'),
     dye = require('dye'),
     http = require('http'),
-    bluemix = require('./bluemix');
+    bluehue = require('./bluehue');
 
 var app = express();
 
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: false }));
 
-app.use('/bluemix', bluemix.router);
+app.use('/api', bluehue.router);
 
 app.use(function(req, res, next) {
     res.on('finish', function() {

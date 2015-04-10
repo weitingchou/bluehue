@@ -1,0 +1,10 @@
+---
+disk_quota: 1024M
+domain: mybluemix.net
+instances: 1
+services:
+    - MongoLab NoSQL MongoLab-qd
+applications:
+- name: BlueHue
+  host: bluehue
+  memory: 1024M

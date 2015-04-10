@@ -5,12 +5,49 @@
 
 var log = require('logule').init(module, 'Bluemix'),
     uuid = require('node-uuid'),
-    BlueHue = require('./BlueHue'),
+    BlueHue = require('./hue'),
     db = require('./db');
 
-log.error('in routes, init ticket');
-db.initTicketCounter();
+db.deleteAllUsers();
+db.initTicket();
 var hue = new BlueHue();
+
+function initHue() {
+    hue.turnOff(1);
+    hue.turnOff(2);
+    hue.turnOff(3);
+}
+initHue();
+
+var ticketTTL = 180000; // 3 minutes in milliseconds
+function removeExpiredUsers() {
+    try {
+        var time = new Date().getTime() - ticketTTL;
+        db.getUsersBefore(time, function(err, users) {
+            if (err) {
+                if (err.name !== 'NotFoundError') {
+                    log.error('Failed to get expired users, err: '+err);
+                }
+            } else {
+                users.forEach(function(user) {
+                    db.deleteUser(user.mac, function(err) {
+                        if (err) { log.error('Failed to delete user: '+user.mac); }
+                        else {
+                            log.info('User '+user.mac+' has been deleted!'); 
+                            db.releaseTicket(user.ticket, function(err) {
+                                if (err) { log.error('Failed to release ticket, err: '+err); }
+                                else { hue.turnOff(user.ticket); }
+                            });
+                        }
+                    });
+                });
+            }
+        });
+    } catch (err) {
+        log.error('Unexpected error, err: '+err);
+    }
+}
+setInterval(removeExpiredUsers, ticketTTL);
 
 function allow_methods(methods) {
     return function(req, res) {
@@ -40,7 +77,14 @@ exports.bluemix = function(router) {
                         db.createUser(mac, passcode, key, ticket, function(err) {
                             if (err) {
                                 log.error('Failed to create user, err: '+err);
-                                return res.status(500).send({error: 'Internal Error'});
+                                db.releaseTicket(function(err) {
+                                    if (err) { log.error('Failed to release ticket, err: '+err); }
+                                });
+                                if (err.name === 'DupKeyError') {
+                                    return res.status(500).send({error: err.message});
+                                } else {
+                                    return res.status(500).send({error: 'Internal Error'});
+                                }
                             }
                             hue.turnOn(ticket);
                             res.send({message: 'Success', ticket: ticket, key: key});
