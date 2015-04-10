@@ -129,6 +129,17 @@ exports.bluemix = function(router) {
         }
     };
 
+    function resetHandler(req, res) {
+        db.deleteAllUsers();
+        db.initTicket();
+
+        hue.turnOff(1);
+        hue.turnOff(2);
+        hue.turnOff(3);
+
+        res.send('Success');
+    };
+
     function validateMacAndPasscodeFormat(mac, passcode) {
         try {
             if (mac && passcode) {
@@ -196,6 +207,9 @@ exports.bluemix = function(router) {
     router.route('/hue')
         .post(hueHandler)
         .options(allow_methods('POST'));
+
+    router.route('/reset')
+        .get(resetHandler);
 };
 
 exports.addTo = function(router) {
