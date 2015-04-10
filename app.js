@@ -1,4 +1,5 @@
 var express = require('express'),
+    path = require('path'),
     bodyParser = require('body-parser'),
     log = require('logule').init(module, 'App'),
     dye = require('dye'),
@@ -9,6 +10,7 @@ var app = express();
 
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: false }));
+app.use(express.static(path.join(__dirname, 'public/')));
 
 app.use('/api', bluehue.router);
 

@@ -1,0 +1,52 @@
+<!-- index.html -->
+<!DOCTYPE html>
+<html>
+  <body>
+    <header>
+      <nav class="navbar navbar-default">
+        <div class="container">
+          <div class="navbar-header">
+            <a class="navbar-brand" href="/">BlueHue</a>
+          </div>
+        </div>
+      </nav>
+    </header>
+
+    <div>
+        <p>
+        Endpoint: /api/register
+        </br>
+        Request body: </br>
+        {</br>
+            "mac": "MAC_ADDRESS", </br>
+            "passcode": "SIX_DIGITS_NUMBER" </br>
+        }</br>
+        Response: </br>
+        in success: </br>
+        {</br>
+            "message": "Success",</br>
+            "key": "KEY",</br>
+            "lightbulb": 1</br>
+        }</br>
+        in failure:</br>
+        {</br>
+            "error": "ERROR_MESSAGE"</br>
+        }</br>
+        </p>
+        <p>
+        Endpoint: /api/hue</br>
+
+        Request body:</br>
+        {</br>
+            "key": "KEY",</br>
+            "color": {</br>
+                "R": 12,</br>
+                "G": 24,</br>
+                "B": 66</br>
+            }</br>
+        }</br>
+        </p>
+    </div>
+  </body>
+</html>
+
