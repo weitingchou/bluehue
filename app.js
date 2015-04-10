@@ -1,6 +1,6 @@
 var express = require('express'),
     bodyParser = require('body-parser'),
-    log = require('logule').init(module, 'Bluemix app'),
+    log = require('logule').init(module, 'App'),
     dye = require('dye'),
     http = require('http'),
     bluehue = require('./bluehue');

@@ -3,7 +3,7 @@
  * @module bluemix/routes
  */
 
-var log = require('logule').init(module, 'Bluemix'),
+var log = require('logule').init(module, 'API'),
     uuid = require('node-uuid'),
     BlueHue = require('./hue'),
     db = require('./db');

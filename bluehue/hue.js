@@ -1,6 +1,7 @@
 var hue = require("node-hue-api"),
     hueAPI = hue.HueApi,
-    lightState = hue.lightState;
+    lightState = hue.lightState,
+    log = require('logule').init(module, 'Hue');
 
 
 //var hostname = '192.168.1.106',
@@ -24,7 +25,7 @@ function BlueHue(){
 
 
 var displayResult = function(result) {
-    console.log(JSON.stringify(result, null, 2));
+    log.info(JSON.stringify(result, null, 2));
 };
 
 BlueHue.prototype.setLightNo = function (light_no){
@@ -34,7 +35,7 @@ BlueHue.prototype.setLightNo = function (light_no){
 
 BlueHue.prototype.turnOn = function(light_no){
 
-    console.log(" turn on the light ");
+    log.info(" turn on the light ");
 
     var setOnState = lightState.create().on();
     api.setLightState(light_no, setOnState);
@@ -42,7 +43,7 @@ BlueHue.prototype.turnOn = function(light_no){
 
 BlueHue.prototype.setReady = function(light_no){
 
-    console.log("Set light in standby mode. ");
+    log.info("Set light in standby mode. ");
 
     var setReadyState = lightState.create().on().rgb(255,150,0).bri(50).shortAlert();
     api.setLightState(light_no, setReadyState);
@@ -51,7 +52,7 @@ BlueHue.prototype.setReady = function(light_no){
 
 BlueHue.prototype.turnOff = function(light_no){
 
-    console.log(" turn off the light ");
+    log.info(" turn off the light ");
     
     var setOffState = lightState.create().off();
     api.setLightState(light_no, setOffState);
@@ -60,7 +61,7 @@ BlueHue.prototype.turnOff = function(light_no){
 
 BlueHue.prototype.setColor = function(light_no, R, G, B){
 
-    console.log("set light color. light_no: " + light_no);
+    log.info("set light color. light_no: " + light_no);
 
     var setColorState = lightState.create().rgb(R,G,B);
     api.setLightState(light_no, setColorState);
