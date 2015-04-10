@@ -5,7 +5,7 @@
 var log = require('logule').init(module, 'Bluemix route');
 
 var dbUrl = process.env.VCAP_SERVICES ?
-            JSON.parse(process.env.VCAP_SERVICES).mongolabNoSQLDB[0].credentials.url :
+            JSON.parse(process.env.VCAP_SERVICES).mongolab[0].credentials.uri :
             'mongodb://localhost:27017/';
 var totalTickets = 3; // Number of Hue lightbulbs
 
