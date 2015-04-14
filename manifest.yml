@@ -2,9 +2,7 @@
 disk_quota: 1024M
 domain: mybluemix.net
 instances: 1
-services:
-    - MongoLab-qd
 applications:
-- name: BlueHue
-  host: bluehue
+- name: Humix
+  host: humix-watson
   memory: 256M

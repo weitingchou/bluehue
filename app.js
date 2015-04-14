@@ -4,7 +4,8 @@ var express = require('express'),
     log = require('logule').init(module, 'App'),
     dye = require('dye'),
     http = require('http'),
-    bluehue = require('./bluehue');
+    //bluehue = require('./bluehue'),
+    watson = require('./watson');
 
 var app = express();
 
@@ -12,18 +13,19 @@ app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: false }));
 app.use(express.static(path.join(__dirname, 'public/')));
 
-app.use('/api', bluehue.router);
-
 app.use(function(req, res, next) {
     res.on('finish', function() {
         var method = res.statusCode < 400 ? dye.green(req.method) : dye.red(req.method);
-        log.info('%s %s %d %d', dye.bold(method), req.OriginalUrl, res.statusCode, res._headers['content-length']);
+        log.info('%s %s %d %d', dye.bold(method), req.originalUrl, res.statusCode, res._headers['content-length']);
     });
     res.on('error', function(err) {
         log.error('%s %s %d %s', req.method, req.originalUrl, res.statusCode, err);
     });
     next();
 });
+
+//app.use('/api', bluehue.router);
+app.use('/watson', watson.router);
 
 // catch 404 and forward to error handler
 app.use(function(req, res, next) {
